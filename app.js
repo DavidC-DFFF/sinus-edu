@@ -7,6 +7,15 @@
   let umoyDelayTimer = null;
   let ampDelayTimer = null;
   let freqDelayTimer = null;
+  // Drag/animation lock for Umoy
+  let draggingUmoy = false;
+  function cancelAllAnimations() {
+    // Cancel queued resize animations and any in-flight animateValue
+    animToken++;
+    if (ampDelayTimer) { clearTimeout(ampDelayTimer); ampDelayTimer = null; }
+    if (freqDelayTimer) { clearTimeout(freqDelayTimer); freqDelayTimer = null; }
+  }
+
 
   // DOM
   const cvs = document.getElementById('scope');
@@ -272,10 +281,8 @@
     const A = Math.max(1e-9, parseFloat(uMax.value));
     const target = (0.8 * h) / (2 * Math.max(1e-6, A));
     if (ampDelayTimer) clearTimeout(ampDelayTimer);
-    ampDelayTimer = setTimeout(() => {
-      animatePxPerVolt(target, 1000);
-    }, 500);
-  });
+    ampDelayTimer = setTimeout(() => { if (!draggingUmoy) animatePxPerVolt(target, 1000); }, 500);
+});
 
   freq.addEventListener('input', () => {
     let v = parseFloat(freq.value);
@@ -286,10 +293,8 @@
     syncFromUI();
     const target = 2 * (1 / Math.max(0.1, parseFloat(freq.value)));
     if (freqDelayTimer) clearTimeout(freqDelayTimer);
-    freqDelayTimer = setTimeout(() => {
-      animateTWindow(target, 1000);
-    }, 500);
-  });
+    freqDelayTimer = setTimeout(() => { if (!draggingUmoy) animateTWindow(target, 1000); }, 500);
+});
 
   uDc.addEventListener('input', () => {
     let v = parseFloat(uDc.value);
@@ -301,10 +306,21 @@
 
   
   // Trigger Umoy animation only on release
-  let _dragUmoy = false;
-  uDc.addEventListener('pointerdown', () => { _dragUmoy = true; });
-  uDc.addEventListener('pointerup',   () => { _dragUmoy = false; animateUmoy(state.umoy, 1000); });
-  uDc.addEventListener('change',      () => { if (!_dragUmoy) animateUmoy(state.umoy, 1000); });
+  // Robust multi-input (mouse/touch) handling + cancel of ongoing animations
+  function startUmoyDrag() { draggingUmoy = true; cancelAllAnimations(); }
+  function endUmoyDrag(shouldAnimate = true) { draggingUmoy = false; if (shouldAnimate) animateUmoy(state.umoy, 1000); }
+
+  uDc.addEventListener('pointerdown', () => startUmoyDrag());
+  uDc.addEventListener('pointerup',   () => endUmoyDrag(true));
+  uDc.addEventListener('pointercancel', () => endUmoyDrag(false));
+  uDc.addEventListener('mousedown', () => startUmoyDrag());
+  uDc.addEventListener('mouseup',   () => endUmoyDrag(true));
+  uDc.addEventListener('mouseleave', () => {}); // noop
+  uDc.addEventListener('touchstart', () => startUmoyDrag(), {passive:true});
+  uDc.addEventListener('touchend',   () => endUmoyDrag(true));
+  uDc.addEventListener('touchcancel',() => endUmoyDrag(false));
+  uDc.addEventListener('change',     () => { if (!draggingUmoy) animateUmoy(state.umoy, 1000); });
+
 // ===== Init + tests =====
   function init() {
     fitCanvas();
