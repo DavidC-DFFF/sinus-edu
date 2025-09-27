@@ -313,29 +313,86 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* ——— Footer credit: fixed to viewport bottom, always visible ——— */
-:root { --footer-height: 36px; }
+:root {
+  --footer-height: 36px;
+}
 
 /* Reserve space so content isn't hidden behind the footer */
-body { padding-bottom: var(--footer-height); }
+body {
+  padding-bottom: var(--footer-height);
+}
 
 .app-footer {
   position: fixed;
-  left: 0; right: 0; bottom: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   min-height: var(--footer-height);
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 0.85rem;
   opacity: 0.6;
   padding: 6px 10px;
   border-top: 1px solid currentColor;
-  background: transparent; /* reste discret par défaut */
-  pointer-events: none;     /* n'intercepte pas les clics si pas de lien */
+  background: transparent;
+  /* reste discret par défaut */
+  pointer-events: none;
+  /* n'intercepte pas les clics si pas de lien */
   z-index: 9999;
 }
 
 /* Optionnel : un léger fond quand la fenêtre est très petite */
 @media (max-height: 520px) {
-  .app-footer { background: rgba(0,0,0,.04); }
+  .app-footer {
+    background: rgba(0, 0, 0, .04);
+  }
 }
+
 @media (prefers-color-scheme: dark) {
-  .app-footer { background: rgba(255,255,255,.04); }
+  .app-footer {
+    background: rgba(255, 255, 255, .04);
+  }
+}
+
+:root {
+  --footer-height: 36px;
+}
+
+/* Réserve l'espace pour ne pas masquer le contenu */
+body {
+  padding-bottom: var(--footer-height);
+}
+
+/* Footer toujours visible */
+.app-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: var(--footer-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .85rem;
+  opacity: .6;
+  padding: 6px 10px;
+  border-top: 1px solid currentColor;
+  background: transparent;
+  pointer-events: none;
+  /* mets en commentaire si tu veux un lien cliquable */
+  z-index: 9999;
+}
+
+/* Légère teinte selon contexte */
+@media (max-height: 520px) {
+  .app-footer {
+    background: rgba(0, 0, 0, .04);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .app-footer {
+    background: rgba(255, 255, 255, .04);
+  }
 }
