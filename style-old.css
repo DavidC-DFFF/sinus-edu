@@ -311,16 +311,3 @@ input[type="range"]::-moz-range-thumb {
   accent-color: var(--cPhi);
   color: var(--cPhi);
 }
-
-/* ——— Footer credit (humble) ——— */
-html, body { height: 100%; }
-body { display: flex; flex-direction: column; }
-.app { flex: 1 0 auto; }  /* ensure main app takes remaining space */
-.app-footer {
-  flex-shrink: 0;
-  font-size: 0.85rem;
-  text-align: center;
-  opacity: 0.6;
-  padding: 8px 12px;
-  border-top: 1px solid currentColor;
-}
