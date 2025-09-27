@@ -310,13 +310,11 @@
     setRangeFill(uDc);
     syncFromUI();
     if (umoyDelayTimer) clearTimeout(umoyDelayTimer);
-    umoyDelayTimer = null; // defer Umoy animation until slider release
+    umoyDelayTimer = setTimeout(() => {
+      animateUmoy(state.umoy, 1000);
+    }, 500);
   });
 
-  // Trigger Umoy recenter only after release
-  uDc.addEventListener('change', () => {
-    animateUmoy(state.umoy, 1000);
-  });
   // ===== Init + tests =====
   function init() {
     fitCanvas();
