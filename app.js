@@ -272,17 +272,10 @@
     const A = Math.max(1e-9, parseFloat(uMax.value));
     const target = (0.8 * h) / (2 * Math.max(1e-6, A));
     if (ampDelayTimer) clearTimeout(ampDelayTimer);
-    ampDelayTimer = null; // defer vertical auto-frame until slider release
+    ampDelayTimer = setTimeout(() => {
+      animatePxPerVolt(target, 1000);
+    }, 500);
   });
-
-  // Trigger vertical auto-frame only after release
-  uMax.addEventListener('change', () => {
-    const { h } = layout();
-    const A = Math.max(1e-9, parseFloat(uMax.value));
-    const target = (0.8 * h) / (2 * Math.max(1e-6, A));
-    animatePxPerVolt(target, 1000);
-  });
-
 
   freq.addEventListener('input', () => {
     let v = parseFloat(freq.value);
@@ -293,15 +286,10 @@
     syncFromUI();
     const target = 2 * (1 / Math.max(0.1, parseFloat(freq.value)));
     if (freqDelayTimer) clearTimeout(freqDelayTimer);
-    freqDelayTimer = null; // defer horizontal auto-frame until slider release
+    freqDelayTimer = setTimeout(() => {
+      animateTWindow(target, 1000);
+    }, 500);
   });
-
-  // Trigger horizontal auto-frame only after release
-  freq.addEventListener('change', () => {
-    const target = 2 * (1 / Math.max(0.1, parseFloat(freq.value)));
-    animateTWindow(target, 1000);
-  });
-
 
   uDc.addEventListener('input', () => {
     let v = parseFloat(uDc.value);
@@ -309,13 +297,15 @@
     if (s !== null) { v = s; uDc.value = String(v); }
     setRangeFill(uDc);
     syncFromUI();
-    if (umoyDelayTimer) clearTimeout(umoyDelayTimer);
-    umoyDelayTimer = setTimeout(() => {
-      animateUmoy(state.umoy, 1000);
-    }, 500);
   });
 
-  // ===== Init + tests =====
+  
+  // Trigger Umoy animation only on release
+  let _dragUmoy = false;
+  uDc.addEventListener('pointerdown', () => { _dragUmoy = true; });
+  uDc.addEventListener('pointerup',   () => { _dragUmoy = false; animateUmoy(state.umoy, 1000); });
+  uDc.addEventListener('change',      () => { if (!_dragUmoy) animateUmoy(state.umoy, 1000); });
+// ===== Init + tests =====
   function init() {
     fitCanvas();
     window.addEventListener('resize', () => { fitCanvas(); draw(); });
